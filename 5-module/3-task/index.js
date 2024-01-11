@@ -1,55 +1,36 @@
 function initCarousel() {
-  const carouselInner = document.querySelector('.carousel__inner');
-  const carouselArrowLeft = document.querySelector('.carousel__arrow_left');
-  const carouselArrowRight = document.querySelector('.carousel__arrow_right');
-  const carouselImages = Array.from(document.querySelectorAll('.carousel__img'));
+  const carousel = document.querySelector('.carousel');
+  const carouselInner = carousel.querySelector('.carousel__inner');
+  const carouselArrowLeft = carousel.querySelector('.carousel__arrow_left');
+  const carouselArrowRight = carousel.querySelector('.carousel__arrow_right');
+  const carouselSlides = Array.from(carouselInner.querySelectorAll('.carousel__slide'));
   
-  function getTransformTranslateValue() {
-    let value = '';
-    let arr = carouselInner.style.transform.split('');
-    arr.forEach(char => {
-      if (Number(char)) {
-        value += char;
-      }
-    });
-    
-    return value;
-  }
-  
-  let index = 0;
+  let counter = 1;
   carouselArrowLeft.style.display = 'none';
   
-  carouselArrowRight.addEventListener('click', () => {
-    carouselArrowLeft.style.display = '';
-    let previousTransformTranslateValue = 0;
-    
-    if (carouselInner.style.transform) {
-      previousTransformTranslateValue = getTransformTranslateValue();
-    }
-    
-    const carouselImageWidth = carouselImages[index].offsetWidth;
-    carouselInner.style.transform = `translateX(${-Number(previousTransformTranslateValue) - carouselImageWidth}px)`;
-    ++index;
-    
-    if (index === carouselImages.length - 1) {
-      carouselArrowRight.style.display = 'none';
-    }
-  });
-  
-  carouselArrowLeft.addEventListener('click', () => {
-    carouselArrowRight.style.display = '';
-    let previousTransformTranslateValue = getTransformTranslateValue();
-    const carouselImageWidth = carouselImages[index].offsetWidth;
-    //С этим кодом все работает, но не проходит тест
-    //carouselInner.style.transform = `translateX(${-Number(previousTransformTranslateValue) + carouselImageWidth}px)`;
+  carousel.addEventListener('click', (event) => {
+    const slideWidth = carouselSlides[counter].offsetWidth;
 
-    //С этим кодом проходит тест, но задание считается не выполненым
-    carouselInner.style.transform = `translateX(${-Number(previousTransformTranslateValue) - carouselImageWidth + 55}px)`;
-    --index;
-    
-    if (index === 0) {
-      carouselArrowLeft.style.display = 'none';
-      carouselInner.style.transform = '';
+    if (event.target.closest('.carousel__arrow_right')) {
+      carouselInner.setAttribute('style', `transform: translateX(${-slideWidth * counter}px)`);
+      counter++;
+      carouselArrowLeft.style.display = '';
+      
+      if (counter === carouselSlides.length) {
+        carouselArrowRight.style.display = 'none';
+        counter--;
+      }
+    }
+
+    if (event.target.closest('.carousel__arrow_left')) {
+      counter--;
+      carouselInner.setAttribute('style', `transform: translateX(${-slideWidth * counter}px)`);
+      carouselArrowRight.style.display = '';
+      
+      if (counter === 0) {
+        carouselArrowLeft.style.display = 'none';
+        counter++;
+      }
     }
   });
 }
